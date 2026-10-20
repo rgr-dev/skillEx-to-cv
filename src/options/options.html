@@ -1,102 +1,102 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>SkillEx to CV — Panel de Control</title>
+  <title>SkillEx to CV — Control Panel</title>
   <link rel="stylesheet" href="options.css" />
 </head>
 <body>
-  <h1>SkillEx to CV — Panel de Control</h1>
+  <h1 data-i18n="controlPanel">SkillEx to CV — Control Panel</h1>
 
   <nav class="main-tabs">
-    <button class="main-tab active" data-target="panel-config">Configuración</button>
+    <button class="main-tab active" data-target="panel-config" data-i18n="tabSettings">Settings</button>
     <button class="main-tab" data-target="panel-history">
-      Historial de Postulaciones <span class="tab-badge" id="tab-history-count">0</span>
+      <span data-i18n="tabApplicationHistory">Application history</span>
+      <span class="tab-badge" id="tab-history-count">0</span>
     </button>
   </nav>
 
-  <!-- Panel 1: Configuración -->
+  <!-- Panel 1: Settings -->
   <div id="panel-config" class="tab-panel">
     <section>
-      <h2>Proveedor de IA</h2>
+      <h2 data-i18n="sectionAiProvider">AI Provider</h2>
       <form id="ai-config-form">
         <label>
-          Proveedor
+          <span data-i18n="labelProvider">Provider</span>
           <select id="provider">
-            <option value="anthropic">Anthropic (Claude)</option>
-            <option value="openai">OpenAI (GPT)</option>
-            <option value="generic">Genérico (endpoint compatible OpenAI)</option>
+            <option value="anthropic" data-i18n="providerOptionAnthropic">Anthropic (Claude)</option>
+            <option value="openai" data-i18n="providerOptionOpenAI">OpenAI (GPT)</option>
+            <option value="generic" data-i18n="providerOptionGeneric">Generic (OpenAI compatible endpoint)</option>
           </select>
         </label>
 
         <label>
-          API Key
-          <input type="password" id="apiKey" autocomplete="off" placeholder="sk-... / api key" />
+          <span data-i18n="labelApiKey">API Key</span>
+          <input type="password" id="apiKey" autocomplete="off" data-i18n-placeholder="placeholderApiKey" placeholder="sk-... / api key" />
         </label>
 
         <label>
-          Modelo (opcional)
-          <input type="text" id="model" placeholder="Ej: claude-sonnet-5, gpt-4o-mini" />
+          <span data-i18n="labelModel">Model (optional)</span>
+          <input type="text" id="model" data-i18n-placeholder="placeholderModel" placeholder="E.g.: claude-sonnet-5, gpt-4o-mini" />
         </label>
 
         <label id="endpoint-field">
-          Endpoint (solo proveedor genérico)
-          <input type="text" id="endpoint" placeholder="https://mi-proveedor.com/v1/chat/completions" />
+          <span data-i18n="labelEndpoint">Endpoint (generic provider only)</span>
+          <input type="text" id="endpoint" data-i18n-placeholder="placeholderEndpoint" placeholder="https://my-provider.com/v1/chat/completions" />
         </label>
 
-        <button type="submit">Guardar configuración</button>
-        <span id="config-saved-msg" class="saved-msg" hidden>Guardado ✓</span>
+        <button type="submit" data-i18n="btnSaveConfig">Save settings</button>
+        <span id="config-saved-msg" class="saved-msg" hidden data-i18n="msgSaved">Saved ✓</span>
       </form>
     </section>
 
     <section>
-      <h2>CV maestro por idioma</h2>
-      <p class="hint">
-        Este es el contenido base desde el cual la IA arma cada CV adaptado. Edítalo directamente o carga un archivo
-        .md para reemplazarlo.
+      <h2 data-i18n="sectionMasterCv">Master CV by language</h2>
+      <p class="hint" data-i18n="hintMasterCv">
+        This is the base content used by the AI to build each tailored CV. Edit it directly or upload a .md file to replace it.
       </p>
 
       <div class="lang-tabs">
-        <button class="lang-tab active" data-lang="es">Español</button>
-        <button class="lang-tab" data-lang="en">English</button>
-        <button class="lang-tab" data-lang="pt">Português</button>
+        <button class="lang-tab active" data-lang="es" data-i18n="langEs">Spanish</button>
+        <button class="lang-tab" data-lang="en" data-i18n="langEn">English</button>
+        <button class="lang-tab" data-lang="pt" data-i18n="langPt">Portuguese</button>
       </div>
 
       <input type="file" id="md-file-input" accept=".md,text/markdown,text/plain" />
       <textarea id="md-editor" rows="20" spellcheck="false"></textarea>
 
       <div class="md-actions">
-        <button id="save-md-btn">Guardar CV maestro</button>
-        <button id="reset-md-btn" class="secondary">Restaurar valor por defecto</button>
-        <span id="md-saved-msg" class="saved-msg" hidden>Guardado ✓</span>
+        <button id="save-md-btn" data-i18n="btnSaveMasterCv">Save master CV</button>
+        <button id="reset-md-btn" class="secondary" data-i18n="btnResetDefault">Reset to default</button>
+        <span id="md-saved-msg" class="saved-msg" hidden data-i18n="msgSaved">Saved ✓</span>
       </div>
     </section>
   </div>
 
-  <!-- Panel 2: Historial de Postulaciones -->
+  <!-- Panel 2: Application History -->
   <div id="panel-history" class="tab-panel" hidden>
     <div class="metrics-row">
       <div class="metric-card">
         <div class="metric-value" id="metric-total">0</div>
-        <div class="metric-label">Postulaciones generadas</div>
+        <div class="metric-label" data-i18n="metricTotal">Applications generated</div>
       </div>
       <div class="metric-card">
         <div class="metric-value" id="metric-companies">0</div>
-        <div class="metric-label">Empresas distintas</div>
+        <div class="metric-label" data-i18n="metricCompanies">Distinct companies</div>
       </div>
       <div class="metric-card">
         <div class="metric-value" id="metric-avg-score">0%</div>
-        <div class="metric-label">Promedio Match ATS</div>
+        <div class="metric-label" data-i18n="metricAvgScore">Average ATS Match</div>
       </div>
     </div>
 
     <div class="history-actions-bar">
       <div class="history-actions-left">
-        <button id="export-csv-btn" class="btn-success">Exportar a Excel (.csv)</button>
-        <button id="export-json-btn" class="btn-secondary">Exportar JSON</button>
+        <button id="export-csv-btn" class="btn-success" data-i18n="btnExportCsv">Export to Excel (.csv)</button>
+        <button id="export-json-btn" class="btn-secondary" data-i18n="btnExportJson">Export JSON</button>
       </div>
       <div class="history-actions-right">
-        <button id="clear-history-btn" class="btn-danger">Limpiar historial</button>
+        <button id="clear-history-btn" class="btn-danger" data-i18n="btnClearHistory">Clear history</button>
       </div>
     </div>
 
@@ -104,24 +104,26 @@
       <table class="history-table" id="history-table">
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Empresa</th>
-            <th>Puesto</th>
-            <th>Match ATS</th>
-            <th>Skills</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th data-i18n="thDate">Date</th>
+            <th data-i18n="thCompany">Company</th>
+            <th data-i18n="thRole">Role</th>
+            <th data-i18n="thMatchAts">ATS Match</th>
+            <th data-i18n="thSkills">Skills</th>
+            <th data-i18n="thStatus">Status</th>
+            <th data-i18n="thActions">Actions</th>
           </tr>
         </thead>
         <tbody id="history-tbody">
         </tbody>
       </table>
-      <div id="history-empty" class="history-empty" hidden>
-        No hay postulaciones registradas todavía. Selecciona texto en una oferta de trabajo y genera tu primer CV adaptado.
+      <div id="history-empty" class="history-empty" hidden data-i18n="historyEmpty">
+        No applications recorded yet. Select text in a job posting and generate your first tailored CV.
       </div>
     </div>
   </div>
 
+  <script src="../lib/i18n-helper.js"></script>
+  <script src="../lib/i18n.js"></script>
   <script src="../lib/storage.js"></script>
   <script src="options.js"></script>
 </body>

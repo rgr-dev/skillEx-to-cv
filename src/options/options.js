@@ -1,5 +1,6 @@
 "use strict";
 
+// AI form's config elements
 const providerSelect = document.getElementById("provider");
 const apiKeyInput = document.getElementById("apiKey");
 const modelInput = document.getElementById("model");
@@ -8,6 +9,7 @@ const endpointField = document.getElementById("endpoint-field");
 const aiConfigForm = document.getElementById("ai-config-form");
 const configSavedMsg = document.getElementById("config-saved-msg");
 
+// Markdown's elements
 const langTabs = Array.from(document.querySelectorAll(".lang-tab"));
 const mdEditor = document.getElementById("md-editor");
 const mdFileInput = document.getElementById("md-file-input");
@@ -18,6 +20,7 @@ const mdSavedMsg = document.getElementById("md-saved-msg");
 let activeLang = "es";
 
 function flashSaved(el) {
+  if (!el) return;
   el.hidden = false;
   setTimeout(() => (el.hidden = true), 1800);
 }
@@ -28,7 +31,7 @@ function toggleEndpointField() {
 
 async function loadConfig() {
   const config = await SkillExStorage.getConfig();
-  providerSelect.value = config.provider;
+  providerSelect.value = config.provider || "anthropic";
   apiKeyInput.value = config.apiKey || "";
   modelInput.value = config.model || "";
   endpointInput.value = config.endpoint || "";
@@ -85,13 +88,13 @@ resetMdBtn.addEventListener("click", async () => {
   flashSaved(mdSavedMsg);
 });
 
-// Elementos de la barra principal de pestañas
+
 const mainTabs = Array.from(document.querySelectorAll(".main-tab"));
 const panelConfig = document.getElementById("panel-config");
 const panelHistory = document.getElementById("panel-history");
 const tabHistoryCount = document.getElementById("tab-history-count");
 
-// Elementos de métricas e historial
+
 const metricTotal = document.getElementById("metric-total");
 const metricCompanies = document.getElementById("metric-companies");
 const metricAvgScore = document.getElementById("metric-avg-score");
@@ -134,13 +137,19 @@ function formatDate(isoString) {
 
 async function loadHistoryDashboard() {
   const history = await SkillExStorage.getApplicationsHistory();
-  tabHistoryCount.textContent = history.length;
+  if (tabHistoryCount) {
+    tabHistoryCount.textContent = history.length;
+  }
   metricTotal.textContent = history.length;
+
+  const confidentialCo = (getMessage("promptConfidentialCompany") || "Confidential Company").toLowerCase();
+  const unspecifiedCo = (getMessage("promptUnspecified") || "Unspecified").toLowerCase();
+  const defaultCo = (getMessage("promptDefaultCompany") || "company").toLowerCase();
 
   const companiesSet = new Set(
     history
       .map((item) => (item.company || "").trim().toLowerCase())
-      .filter((c) => c && !["empresa confidencial", "no especificada", "empresa"].includes(c))
+      .filter((c) => c && ![confidentialCo, unspecifiedCo, defaultCo, "empresa confidencial", "no especificada", "empresa", "company"].includes(c))
   );
   metricCompanies.textContent = companiesSet.size;
 
@@ -155,45 +164,56 @@ async function loadHistoryDashboard() {
   const totalScore = history.reduce((acc, item) => acc + (Number(item.matchScore) || 0), 0);
   metricAvgScore.textContent = `${Math.round(totalScore / history.length)}%`;
 
+  const defaultCompanyStr = getMessage("promptDefaultCompany") || "Company";
+  const generatedStatusStr = getMessage("statusGenerated") || "Generated";
+  const deleteRecordTitle = getMessage("titleDeleteRecord") || "Delete record";
+  const openOfferTitle = getMessage("titleOpenJobOffer") || "Open original offer";
+  const offerLabel = getMessage("linkOffer") || "Offer ↗";
+
   historyTbody.innerHTML = history
     .map((item) => {
       const score = Number(item.matchScore) || 0;
       const levelClass = score >= 80 ? "high" : score >= 60 ? "medium" : "low";
-      const statusClass = (item.status || "").toLowerCase() === "exportado" ? "exportado" : "";
 
       const matchedList = Array.isArray(item.matchedSkills) ? item.matchedSkills : [];
       const missingList = Array.isArray(item.missingSkills) ? item.missingSkills : [];
-      const skillsTooltip = `Coincidentes: ${matchedList.join(", ") || "Ninguna"}\nFaltantes: ${missingList.join(", ") || "Ninguna"}`;
+      const noneStr = getMessage("labelNone") || "None";
+
+      const matchedStr = matchedList.join(", ") || noneStr;
+      const missingStr = missingList.join(", ") || noneStr;
+
+      const skillsTooltip = getMessage("skillsTooltip", [matchedStr, missingStr]);
+      const pillSummary = getMessage("pillSkillsSummary", [matchedList.length.toString(), missingList.length.toString()]);
 
       const linkBtn = item.sourceUrl
-        ? `<a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noopener noreferrer" class="btn-link" title="Abrir oferta original">Oferta ↗</a>`
+        ? `<a href="${escapeHtml(item.sourceUrl)}" target="_blank" rel="noopener noreferrer" class="btn-link" title="${escapeHtml(openOfferTitle)}">${escapeHtml(offerLabel)}</a>`
         : "";
 
       return `
         <tr data-id="${escapeHtml(item.id)}">
           <td>${escapeHtml(formatDate(item.createdAt))}</td>
-          <td><strong>${escapeHtml(item.company || "Empresa")}</strong></td>
+          <td><strong>${escapeHtml(item.company || defaultCompanyStr)}</strong></td>
           <td>${escapeHtml(item.role || "-")}</td>
           <td><span class="score-badge ${levelClass}">${score}%</span></td>
           <td>
             <span class="skills-summary-pill" title="${escapeHtml(skillsTooltip)}">
-              ${matchedList.length} match / ${missingList.length} gaps
+              ${escapeHtml(pillSummary)}
             </span>
           </td>
-          <td><span class="status-badge ${statusClass}">${escapeHtml(item.status || "Generado")}</span></td>
+          <td><span class="status-badge">${escapeHtml(item.status || generatedStatusStr)}</span></td>
           <td>
             ${linkBtn}
-            <button class="btn-icon-danger delete-app-btn" data-id="${escapeHtml(item.id)}" title="Eliminar registro">✕</button>
+            <button class="btn-icon-danger delete-app-btn" data-id="${escapeHtml(item.id)}" title="${escapeHtml(deleteRecordTitle)}">✕</button>
           </td>
         </tr>`;
     })
     .join("");
 
-  // Conectar botones de eliminar individuales
   document.querySelectorAll(".delete-app-btn").forEach((btn) => {
     btn.addEventListener("click", async (e) => {
       const id = e.currentTarget.dataset.id;
-      if (confirm("¿Deseas eliminar esta postulación del historial?")) {
+      const confirmMsg = getMessage("confirmDeleteSingleApp") || "Do you want to delete this application from history?";
+      if (confirm(confirmMsg)) {
         await SkillExStorage.deleteApplication(id);
         await loadHistoryDashboard();
       }
@@ -219,24 +239,24 @@ function downloadBlob(blob, filename) {
 exportCsvBtn.addEventListener("click", async () => {
   const history = await SkillExStorage.getApplicationsHistory();
   if (history.length === 0) {
-    alert("No hay registros en el historial para exportar.");
+    alert(getMessage("alertNoHistoryToExport") || "No history records to export.");
     return;
   }
 
-  // BOM UTF-8 (\uFEFF) para que Excel reconozca tildes y caracteres internacionales
+  // BOM UTF-8 (\uFEFF) For international characters to be recognized by Excel
   const BOM = "\uFEFF";
-  const delimiter = ";"; // Punto y coma para compatibilidad directa con Excel
+  const delimiter = ";";
 
   const headers = [
-    "Fecha",
-    "Empresa",
-    "Puesto",
-    "Score ATS (%)",
-    "Skills Coincidentes",
-    "Skills Faltantes",
-    "Idioma",
-    "Estado",
-    "URL Oferta"
+    getMessage("thDate") || "Date",
+    getMessage("thCompany") || "Company",
+    getMessage("thRole") || "Role",
+    getMessage("csvHeaderAtsScore") || "ATS Score (%)",
+    getMessage("csvHeaderMatchedSkills") || "Matching Skills",
+    getMessage("csvHeaderMissingSkills") || "Missing Skills",
+    getMessage("csvHeaderLanguage") || "Language",
+    getMessage("thStatus") || "Status",
+    getMessage("csvHeaderJobUrl") || "Job URL"
   ];
 
   const escapeCsv = (val) => {
@@ -269,7 +289,7 @@ exportCsvBtn.addEventListener("click", async () => {
 exportJsonBtn.addEventListener("click", async () => {
   const history = await SkillExStorage.getApplicationsHistory();
   if (history.length === 0) {
-    alert("No hay registros en el historial para exportar.");
+    alert(getMessage("alertNoHistoryToExport") || "No history records to export.");
     return;
   }
   const jsonContent = JSON.stringify(history, null, 2);
@@ -278,7 +298,8 @@ exportJsonBtn.addEventListener("click", async () => {
 });
 
 clearHistoryBtn.addEventListener("click", async () => {
-  if (confirm("¿Estás seguro de que deseas vaciar TODO el historial de postulaciones? Esta acción no se puede deshacer.")) {
+  const confirmMsg = getMessage("confirmClearAllHistory") || "Are you sure you want to clear ALL application history? This action cannot be undone.";
+  if (confirm(confirmMsg)) {
     await SkillExStorage.clearApplicationsHistory();
     await loadHistoryDashboard();
   }
@@ -289,11 +310,11 @@ clearHistoryBtn.addEventListener("click", async () => {
   await loadConfig();
   await selectLang(activeLang);
 
-  // Inicializar conteo del historial
   const history = await SkillExStorage.getApplicationsHistory();
-  tabHistoryCount.textContent = history.length;
+  if (tabHistoryCount) {
+    tabHistoryCount.textContent = history.length;
+  }
 
-  // Si se abre con hash #history, mostrar directamente la pestaña de historial
   if (window.location.hash === "#history") {
     switchMainTab("panel-history");
   }

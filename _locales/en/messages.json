@@ -1,0 +1,406 @@
+{
+  "extensionName": {
+    "message": "SkillEx to CV"
+  },
+  "extensionDescription": {
+    "message": "Generates tailored CVs from job postings"
+  },
+  "generateCv": {
+    "message": "Generate CV with these skills"
+  },
+  "settings": {
+    "message": "Settings"
+  },
+  "controlPanel": {
+    "message": "SkillEx to CV — Control Panel"
+  },
+  "saveMasterCv": {
+    "message": "Save master CV"
+  },
+  "applicationHistory": {
+    "message": "Application history"
+  },
+  "loading": {
+    "message": "Generating your tailored CV..."
+  },
+  "errorGeneric": {
+    "message": "Something went wrong. Please try again."
+  },
+  "AIProvider": {
+    "message": "AI Provider"
+  },
+  "AIProviderSec": {
+    "message": "Provider"
+  },
+  "providerOptionAnthropic": {
+    "message": "Anthropic (Claude)"
+  },
+  "providerOptionOpenAI": {
+    "message": "OpenAI (GPT)"
+  },
+  "providerOptionGeneric": {
+    "message": "Generic (OpenAI compatible endpoint)"
+  },
+  "tabSettings": {
+    "message": "Settings"
+  },
+  "tabApplicationHistory": {
+    "message": "Application history"
+  },
+  "sectionAiProvider": {
+    "message": "AI Provider"
+  },
+  "labelProvider": {
+    "message": "Provider"
+  },
+  "labelApiKey": {
+    "message": "API Key"
+  },
+  "placeholderApiKey": {
+    "message": "sk-... / api key"
+  },
+  "labelModel": {
+    "message": "Model (optional)"
+  },
+  "placeholderModel": {
+    "message": "E.g.: claude-sonnet-5, gpt-4o-mini"
+  },
+  "labelEndpoint": {
+    "message": "Endpoint (generic provider only)"
+  },
+  "placeholderEndpoint": {
+    "message": "https://my-provider.com/v1/chat/completions"
+  },
+  "btnSaveConfig": {
+    "message": "Save settings"
+  },
+  "msgSaved": {
+    "message": "Saved ✓"
+  },
+  "sectionMasterCv": {
+    "message": "Master CV by language"
+  },
+  "hintMasterCv": {
+    "message": "This is the base content used by the AI to build each tailored CV. Edit it directly or upload a .md file to replace it."
+  },
+  "langEs": {
+    "message": "Spanish"
+  },
+  "langEn": {
+    "message": "English"
+  },
+  "langPt": {
+    "message": "Portuguese"
+  },
+  "btnSaveMasterCv": {
+    "message": "Save master CV"
+  },
+  "btnResetDefault": {
+    "message": "Reset to default"
+  },
+  "metricTotal": {
+    "message": "Applications generated"
+  },
+  "metricCompanies": {
+    "message": "Distinct companies"
+  },
+  "metricAvgScore": {
+    "message": "Average ATS Match"
+  },
+  "btnExportCsv": {
+    "message": "Export to Excel (.csv)"
+  },
+  "btnExportJson": {
+    "message": "Export JSON"
+  },
+  "btnClearHistory": {
+    "message": "Clear history"
+  },
+  "thDate": {
+    "message": "Date"
+  },
+  "thCompany": {
+    "message": "Company"
+  },
+  "thRole": {
+    "message": "Role"
+  },
+  "thMatchAts": {
+    "message": "ATS Match"
+  },
+  "thSkills": {
+    "message": "Skills"
+  },
+  "thStatus": {
+    "message": "Status"
+  },
+  "thActions": {
+    "message": "Actions"
+  },
+  "historyEmpty": {
+    "message": "No applications recorded yet. Select text in a job posting and generate your first tailored CV."
+  },
+  "statusPreparing": {
+    "message": "Preparing…"
+  },
+  "btnEditCvTitle": {
+    "message": "Enables direct editing of CV text"
+  },
+  "btnEditCv": {
+    "message": "Edit CV ✏️"
+  },
+  "btnCoverLetterTitle": {
+    "message": "Generates a cover letter tailored to the job offer"
+  },
+  "btnCoverLetter": {
+    "message": "Cover Letter ✉️"
+  },
+  "btnRegenerate": {
+    "message": "Regenerate"
+  },
+  "btnExportPdf": {
+    "message": "Export to PDF"
+  },
+  "btnHistory": {
+    "message": "History"
+  },
+  "btnRegenerateCv": {
+    "message": "Regenerate CV"
+  },
+  "summaryDetectedJobText": {
+    "message": "Detected job posting text"
+  },
+  "atsCompany": {
+    "message": "Company"
+  },
+  "atsRole": {
+    "message": "Role"
+  },
+  "atsScoreMatch": {
+    "message": "% ATS Match"
+  },
+  "atsAuditTitle": {
+    "message": "ATS Skills Audit:"
+  },
+  "atsMatchedTitle": {
+    "message": "✓ Matching incorporated"
+  },
+  "atsMissingTitle": {
+    "message": "✗ Missing in your Master CV"
+  },
+  "modalQuickAddTitle": {
+    "message": "Add Skill to Master CV"
+  },
+  "modalAddNoticeBefore": {
+    "message": "You are adding"
+  },
+  "modalAddNoticeMiddle": {
+    "message": "to your Master CV"
+  },
+  "modalTargetCategory": {
+    "message": "Target technical category:"
+  },
+  "btnCancel": {
+    "message": "Cancel"
+  },
+  "btnAddToMasterCv": {
+    "message": "Add to Master CV"
+  },
+  "modalCoverLetterTitle": {
+    "message": "Cover Letter"
+  },
+  "clWritingProgress": {
+    "message": "Drafting cover letter with AI…"
+  },
+  "clHint": {
+    "message": "Generated text for the job offer. You can edit it directly before copying:"
+  },
+  "btnRegenerateWithIcon": {
+    "message": "Regenerate 🔄"
+  },
+  "btnCopyText": {
+    "message": "Copy text 📋"
+  },
+  "btnClose": {
+    "message": "Close"
+  },
+  "errInvalidJsonResponse": {
+    "message": "AI response does not contain valid JSON."
+  },
+  "errParseJson": {
+    "message": "Could not parse JSON returned by AI (may be truncated due to token limit). Detail: $1"
+  },
+  "errMissingEndpoint": {
+    "message": "Please configure an endpoint for the generic provider in Options."
+  },
+  "errUnknownProvider": {
+    "message": "Unknown AI provider: $1"
+  },
+  "errMissingApiKey": {
+    "message": "API key is missing in Options."
+  },
+  "promptConfidentialCompany": {
+    "message": "Confidential Company"
+  },
+  "promptUnspecified": {
+    "message": "Unspecified"
+  },
+  "promptDefaultCompany": {
+    "message": "the company"
+  },
+  "promptDefaultRole": {
+    "message": "the position"
+  },
+  "UnkwExportStrategy": {
+    "message": "Unknown export strategy: $STRATEGY$",
+    "placeholders": {
+      "strategy": {
+        "content": "$1"
+      }
+    }
+  },
+  "exportedStatusCV": {
+    "message": "exported"
+  },
+  "labelNone": {
+    "message": "None"
+  },
+  "skillsTooltip": {
+    "message": "Matching: $MATCHED$\nMissing: $MISSING$",
+    "placeholders": {
+      "matched": { "content": "$1" },
+      "missing": { "content": "$2" }
+    }
+  },
+  "statusGenerated": {
+    "message": "Generated"
+  },
+  "titleDeleteRecord": {
+    "message": "Delete record"
+  },
+  "titleOpenJobOffer": {
+    "message": "Open original offer"
+  },
+  "linkOffer": {
+    "message": "Offer ↗"
+  },
+  "pillSkillsSummary": {
+    "message": "$1 match / $2 gaps",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" }
+    }
+  },
+  "confirmDeleteSingleApp": {
+    "message": "Do you want to delete this application from history?"
+  },
+  "confirmClearAllHistory": {
+    "message": "Are you sure you want to clear ALL application history? This action cannot be undone."
+  },
+  "alertNoHistoryToExport": {
+    "message": "No history records available to export."
+  },
+  "csvHeaderAtsScore": {
+    "message": "ATS Score (%)"
+  },
+  "csvHeaderMatchedSkills": {
+    "message": "Matching Skills"
+  },
+  "csvHeaderMissingSkills": {
+    "message": "Missing Skills"
+  },
+  "csvHeaderLanguage": {
+    "message": "Language"
+  },
+  "csvHeaderJobUrl": {
+    "message": "Job URL"
+  },
+  "warnExperienceMismatch": {
+    "message": "Warning: Master CV has $1 experiences, but AI returned only $2. Use \"Regenerate\" or review results before exporting.",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" }
+    }
+  },
+  "atsSummaryCounts": {
+    "message": "($1 matching / $2 missing)",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" }
+    }
+  },
+  "atsEmptyMatched": {
+    "message": "No explicit matches detected."
+  },
+  "atsEmptyMissing": {
+    "message": "Excellent! Your CV covers all mentioned requirements."
+  },
+  "titleAddSkillToMasterCv": {
+    "message": "Add '$1' to your Master CV",
+    "placeholders": {
+      "1": { "content": "$1" }
+    }
+  },
+  "btnEditModeActive": {
+    "message": "Edit Mode: Active ✓"
+  },
+  "msgEditModeActiveNotice": {
+    "message": "Edit mode active. Click on any part of the CV to modify it directly before exporting."
+  },
+  "catBackEnd": {
+    "message": "Back End"
+  },
+  "catFrontEnd": {
+    "message": "Front End"
+  },
+  "catDatabases": {
+    "message": "Databases"
+  },
+  "catDevOpsCloud": {
+    "message": "DevOps & Cloud"
+  },
+  "catOtherSkills": {
+    "message": "Other Skills"
+  },
+  "msgSkillAddedToMasterCv": {
+    "message": "\"$1\" was added to \"$2\" in your Master CV ($3)!",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" },
+      "3": { "content": "$3" }
+    }
+  },
+  "btnRegenerateCvNow": {
+    "message": "Regenerate CV now"
+  },
+  "statusGeneratingCv": {
+    "message": "Generating CV with AI…"
+  },
+  "errNoMasterCvForLang": {
+    "message": "No Master CV configured for language \"$1\". Please upload it in Options.",
+    "placeholders": {
+      "1": { "content": "$1" }
+    }
+  },
+  "statusCvGeneratedReview": {
+    "message": "CV generated. Review content before exporting."
+  },
+  "statusGenerationError": {
+    "message": "An error occurred during generation."
+  },
+  "statusExported": {
+    "message": "Exported"
+  },
+  "statusNoPendingSelection": {
+    "message": "No pending selection found. Select text in a job posting and use the context menu."
+  },
+  "errGeneratingCoverLetter": {
+    "message": "Error generating cover letter: $1",
+    "placeholders": {
+      "1": { "content": "$1" }
+    }
+  },
+  "btnCopiedSuccess": {
+    "message": "Copied! ✓"
+  }
+}

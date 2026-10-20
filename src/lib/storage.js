@@ -49,7 +49,7 @@
           map[lang] = await res.text();
         }
       } catch (err) {
-        console.error(`SkillEx: no se pudo cargar cv-master.${lang}.md`, err);
+        console.error(`SkillEx: was not possible to load cv-master.${lang}.md`, err);
       }
     }
     await browser.storage.local.set({ cvMarkdown: map });

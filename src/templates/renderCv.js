@@ -2,10 +2,21 @@
 (function (global) {
   "use strict";
 
-  /* All literal, human-facing labels used by the rendered CV document must
-   * live here, keyed by language. Never hardcode a label string elsewhere in
-   * this file — that's what caused labels to always render in Spanish
-   * regardless of the CV's actual language. */
+  const i18n = typeof browser !== "undefined" ? browser.i18n : (typeof chrome !== "undefined" ? chrome.i18n : null);
+
+  function getMsg(key) {
+    if (typeof getMessage === "function") {
+      const res = getMessage(key);
+      if (res && res !== key) return res;
+    }
+    if (i18n && typeof i18n.getMessage === "function") {
+      const res = i18n.getMessage(key);
+      if (res) return res;
+    }
+    return "";
+  }
+
+  /* Tabla de respaldo (fallback) con etiquetas según el idioma del CV */
   const LABELS = {
     es: {
       skills: "Habilidades Técnicas",
@@ -28,11 +39,19 @@
   };
 
   function getLabels(lang) {
-    return LABELS[lang] || LABELS.es;
+    const targetLang = (lang || "es").toLowerCase();
+    const fallback = LABELS[targetLang] || LABELS.es;
+
+    return {
+      skills: getMsg(`cvLabelSkills_${targetLang}`) || fallback.skills,
+      experience: getMsg(`cvLabelExperience_${targetLang}`) || fallback.experience,
+      education: getMsg(`cvLabelEducation_${targetLang}`) || fallback.education,
+      technologies: getMsg(`cvLabelTechnologies_${targetLang}`) || fallback.technologies
+    };
   }
 
   function escapeHtml(str) {
-    return String(str)
+    return String(str == null ? "" : str)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");

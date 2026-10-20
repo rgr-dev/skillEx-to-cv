@@ -4,8 +4,10 @@
 (function (global) {
   "use strict";
 
+  const i18n = typeof browser !== "undefined" ? browser.i18n : chrome.i18n;
+
   const CV_JSON_SCHEMA_DESCRIPTION = `
-Devuelve EXCLUSIVAMENTE un objeto JSON (sin texto adicional, sin markdown, sin backticks) con esta forma exacta:
+Return EXCLUSIVELY a JSON object (no extra text, no markdown, no backticks) with this exact structure:
 {
   "metadata": {
     "company": string,
@@ -34,69 +36,72 @@ Devuelve EXCLUSIVAMENTE un objeto JSON (sin texto adicional, sin markdown, sin b
 }`.trim();
 
   function buildPrompts(cvMasterMarkdown, jobPostingText, lang) {
-    const langNames = { es: "español", en: "English", pt: "português" };
+    const langNames = {
+      es: getMessage("langEs") || "Spanish",
+      en: getMessage("langEn") || "English",
+      pt: getMessage("langPt") || "Portuguese"
+    };
     const langLabel = langNames[lang] || lang;
 
     const systemPrompt =
-      "Eres un asistente experto en optimización de CVs para sistemas ATS (Applicant Tracking Systems). " +
-      "Tu única fuente de verdad para el CV es el CV_MAESTRO proporcionado: nunca debes inventar experiencia, empresas, " +
-      "cargos, fechas, títulos académicos ni habilidades que no estén presentes en el CV_MAESTRO. " +
-      "Tu tarea es analizar la OFERTA_DE_TRABAJO, extraer la empresa y el cargo, auditar la coincidencia técnica (ATS match) " +
-      "y seleccionar, priorizar, reordenar y redactar de forma natural las skills y logros del " +
-      "CV_MAESTRO que mejor coincidan con la OFERTA_DE_TRABAJO, para maximizar el matching de palabras clave " +
-      "de un ATS. Si una skill pedida en la oferta no aparece en NINGUNA parte del " +
-      "CV_MAESTRO (ni en la sección de Habilidades Técnicas ni en el detalle de una experiencia), agrégala a missingSkills y NO la agregues al CV final. " +
-      "El usuario suele tener skills reales que domina pero que no siempre detalla explícitamente dentro de cada " +
-      "experiencia puntual (para no hacer el CV interminable); si una skill de la OFERTA_DE_TRABAJO aparece en la " +
-      "sección de Habilidades Técnicas del CV_MAESTRO, SÍ puedes tejerla dentro de un bullet nuevo en una de las " +
-      "dos experiencias más recientes, describiendo de forma plausible y genérica cómo se aplicó (p.ej. 'Apliqué X " +
-      "para Y'), PERO nunca inventes cifras, porcentajes, métricas de impacto ni resultados cuantitativos que no " +
-      "estén ya presentes en el CV_MAESTRO." +
-      "Es importante cuidar la sección de Habilidades Técnicas / skills, ya que los ATS se apoyan mucho ahí, entonces " + 
-      "si en la oferta piden alguna tecnología que está en la misma sección skills de CV_MAESTRO o en algunas de " +
-      "las experiencias laborales, es prioritario que la resaltes en la sección habilidades técnicas del CV que vas a generar.";
+      "You are an expert assistant in optimizing CVs for Applicant Tracking Systems (ATS). " +
+      "Your single source of truth for the CV is the provided MASTER_CV: you must never invent experience, companies, " +
+      "job titles, dates, academic degrees, or skills that are not present in MASTER_CV. " +
+      "Your task is to analyze the JOB_POSTING, extract the company and role, audit the technical match (ATS match), " +
+      "and select, prioritize, reorder, and naturally write the skills and achievements from " +
+      "MASTER_CV that best match the JOB_POSTING to maximize ATS keyword matching. " +
+      "If a skill requested in the offer does not appear ANYWHERE in MASTER_CV (neither in the Technical Skills section nor in experience details), " +
+      "add it to missingSkills and do NOT add it to the final CV. " +
+      "The user typically possesses real skills they master but doesn't always detail explicitly inside every single past " +
+      "experience bullet (to avoid making the CV endless); if a skill from JOB_POSTING appears in the " +
+      "Technical Skills section of MASTER_CV, you MAY weave it into a new bullet under one of the " +
+      "two most recent experiences, describing in a plausible and generic way how it was applied (e.g. 'Applied X for Y'), " +
+      "BUT never invent numbers, percentages, impact metrics, or quantitative results that are not already present in MASTER_CV. " +
+      "It is crucial to care for the Technical Skills section, as ATS rely heavily on it; if the job offer asks for " +
+      "any technology present in the skills section of MASTER_CV or in work experiences, it is high priority " +
+      "that you highlight it in the technical skills section of the generated CV.";
 
     const userPrompt = `
-CV_MAESTRO (idioma: ${langLabel}):
+MASTER_CV (language: ${langLabel}):
 """
 ${cvMasterMarkdown}
 """
 
-OFERTA_DE_TRABAJO (texto seleccionado por el usuario en un portal de empleo):
+JOB_POSTING (text selected by user from job portal):
 """
 ${jobPostingText}
 """
 
-Sigue este proceso EN ORDEN, de forma metódica (no lo saltees ni lo resumas mentalmente):
+Follow this process IN ORDER, methodically (do not skip or mentally summarize):
 
-PASO 1 — Extrae metadatos y el checklist de la oferta:
-a) Identifica el nombre de la empresa contratante (si no se menciona o es confidencial, usa "Empresa Confidencial") y el título del puesto o rol (ej. "Senior Backend Developer"). Asígnalos al objeto "metadata".
-b) Lee la OFERTA_DE_TRABAJO y arma internamente una lista exhaustiva de CADA tecnología, herramienta, lenguaje, framework, metodología o concepto técnico que menciona (requisito obligatorio o deseable, da igual). No te quedes solo con los 3-4 más obvios: si la oferta menciona 15 términos técnicos, tu checklist debe tener 15 items.
+STEP 1 — Extract metadata and job offer checklist:
+a) Identify the hiring company name (if unmentioned or confidential, use "${getMessage("promptConfidentialCompany") || "Confidential Company"}") and job title/role (e.g., "Senior Backend Developer"). Assign them to the "metadata" object.
+b) Read JOB_POSTING and build an exhaustive internal list of EVERY technology, tool, language, framework, methodology, or technical concept mentioned (required or nice-to-have, doesn't matter). Do not stop at the 3-4 most obvious: if the offer mentions 15 technical terms, your checklist must have 15 items.
 
-PASO 2 — Cruza cada item del checklist contra TODO el CV_MAESTRO y calcula el ATS Match:
-Para cada item del checklist, busca si existe una coincidencia exacta o semántica en CUALQUIER parte del CV_MAESTRO: la sección de Habilidades Técnicas, los bullets de cada experiencia, o las líneas de "Tecnologías". Sé generoso con el matching semántico, no solo textual exacto. Ejemplos de matching semántico válido que NO debes pasar por alto:
-   - "OAuth" en la oferta ↔ "OAuth2", "Keycloak (OAuth2)" en el CV_MAESTRO.
-   - "LLM integration in production", "prompt design", "structured outputs" en la oferta ↔ "RAG", "LangChain", "LangGraph", "Integración de Modelos Fundacionales (OpenAI API)", "Arquitectura de Sistemas Agénticos" en el CV_MAESTRO.
-   - "AI-assisted development tools" en la oferta ↔ "GitHub Copilot", "Claude CLI", "Gemini CLI", "Opencode" en el CV_MAESTRO.
-   - "REST API integration" ↔ "RESTful", "Enterprise Integration Patterns (EIP)", "SOAP y RESTful".
-   - "SQL" / "schema design" ↔ "PostgreSQL", "MySQL", "Oracle" y cualquier bullet que hable de bases de datos o índices.
+STEP 2 — Cross-check each checklist item against the ENTIRE MASTER_CV and calculate ATS Match:
+For each item in the checklist, check if an exact or semantic match exists ANYWHERE in MASTER_CV: Technical Skills section, experience bullets, or "Technologies" lines. Be generous with semantic matching, not just exact text matches. Examples of valid semantic matching you MUST NOT miss:
+   - "OAuth" in offer ↔ "OAuth2", "Keycloak (OAuth2)" in MASTER_CV.
+   - "LLM integration in production", "prompt design", "structured outputs" in offer ↔ "RAG", "LangChain", "LangGraph", "Foundation Model Integration (OpenAI API)", "Agentic Systems Architecture" in MASTER_CV.
+   - "AI-assisted development tools" in offer ↔ "GitHub Copilot", "Claude CLI", "Gemini CLI", "Opencode" in MASTER_CV.
+   - "REST API integration" ↔ "RESTful", "Enterprise Integration Patterns (EIP)", "SOAP and RESTful".
+   - "SQL" / "schema design" ↔ "PostgreSQL", "MySQL", "Oracle" and any bullet talking about databases or indexes.
 
-Marca cada item del checklist como MATCH o NO-MATCH:
-- Incluye en "atsMatch.matchedSkills" la lista de todas las tecnologías y conceptos técnicos que hicieron coincidencia.
-- Incluye en "atsMatch.missingSkills" la lista de tecnologías y conceptos requeridos/deseados por la oferta que NO aparecen en el CV_MAESTRO (gaps).
-- Calcula "atsMatch.score": un entero entre 0 y 100 que representa el porcentaje de alineación o cobertura técnica de la oferta alcanzado por el CV (100 = cumple todos los requisitos de la oferta).
+Mark each checklist item as MATCH or NO-MATCH:
+- Include in "atsMatch.matchedSkills" the list of all matching technologies and technical concepts.
+- Include in "atsMatch.missingSkills" the list of required/desired technologies and concepts from the offer that DO NOT appear in MASTER_CV (gaps).
+- Calculate "atsMatch.score": an integer between 0 and 100 representing the percentage of technical coverage or alignment with the offer achieved by the CV (100 = meets all offer requirements).
 
-PASO 3 — Construye el CV con TODOS los MATCH, sin excepciones:
-Todo item marcado como MATCH en el Paso 2 tiene que aparecer literalmente en el CV final (en "skillsSections" y/o en algún bullet de experiencia). No es opcional recortar matches para "priorizar los más importantes": si hay 12 matches, los 12 deben estar presentes. Solo podés recortar bullets NO relacionados con ningún match para mantener el CV conciso (ver Instrucción 7), nunca recortar un match confirmado.
+STEP 3 — Build the CV with ALL MATCHES, without exceptions:
+Every item marked as MATCH in Step 2 must appear literally in the final CV (in "skillsSections" and/or in an experience bullet). Trimming matches to "prioritize the most important" is NOT optional: if there are 12 matches, all 12 must be present. You may only trim bullets NOT related to any match to keep the CV concise (see Instruction 7), never trim a confirmed match.
 
-Instrucciones adicionales:
-1. Escribe el resultado completo en ${langLabel}, el mismo idioma del CV_MAESTRO, ten especial cuidado de no mezclar idiomas.
-2. Usa solo hechos, empresas, cargos, fechas y skills que existan literalmente en el CV_MAESTRO (ya sea en la sección de Habilidades Técnicas o en el detalle de alguna experiencia). Nunca agregues al contenido del CV algo que resultó NO-MATCH en el Paso 2 (solo debe ir en "atsMatch.missingSkills").
-3. Puedes reordenar bullets y reescribir su redacción para incluir naturalmente las palabras clave de la oferta.
-4. PROHIBIDO resumir o colapsar skills concretas en categorías genéricas como "AI tools", "herramientas de IA", "varias tecnologías", "frameworks modernos", etc. Cada MATCH del Paso 2 debe aparecer con su nombre literal (ej. "OpenAI API", "LangChain", "LangGraph", "Claude CLI", "RAG", "Keycloak (OAuth2)"), nunca reemplazado por un término paraguas. "skillsSections" debe conservar categorías separadas (Back End, Front End, Bases de Datos, DevOps & Cloud, IA, etc.) igual que el CV_MAESTRO, en vez de aplanar todo en una sola lista "Technical Skills" genérica: cada categoría del CV_MAESTRO que tenga al menos un MATCH debe conservarse como su propia sección, listando TODOS sus MATCH (no solo 2 o 3 de ejemplo).
-5. Distribución de MATCH que no aparecen en ninguna experiencia puntual: si un MATCH del Paso 2 está en la sección de Habilidades Técnicas del CV_MAESTRO pero NO aparece en los bullets de ninguna experiencia, agrégalo repartido como bullet nuevo en las DOS experiencias más recientes (las dos primeras del listado de Experiencia). Redacta cada bullet nuevo como una aplicación genuina y plausible de esa skill en el contexto de esa experiencia (ej. "Apliqué/Utilicé [skill] para [tarea razonable]"), SIN inventar cifras, porcentajes ni métricas de impacto que no existan ya en el CV_MAESTRO.
-6. OBLIGATORIO: el array "experience" del JSON de salida debe incluir TODAS las empresas/experiencias que aparecen en la sección de Experiencia del CV_MAESTRO, en el mismo orden, sin omitir ninguna. Nunca elimines una experiencia completa para "ahorrar espacio": en su lugar, para las experiencias menos relevantes a la OFERTA_DE_TRABAJO, reduce la cantidad de bullets NO relacionados con ningún MATCH (1-2 bullets genéricos está bien) en vez de quitar la empresa entera.
-7. Mantén el CV conciso (equivalente a 1-2 páginas) recortando bullets sin match, nunca recortando MATCH confirmados ni experiencias completas.
+Additional instructions:
+1. Write the complete result in ${langLabel}, the same language as MASTER_CV, taking special care not to mix languages.
+2. Use only facts, companies, roles, dates, and skills that literally exist in MASTER_CV (either in Technical Skills or inside experience details). Never add to the CV content anything that resulted in NO-MATCH in Step 2 (it should only go into "atsMatch.missingSkills").
+3. You may reorder bullets and rewrite phrasing to naturally incorporate key terms from the job offer.
+4. FORBIDDEN to summarize or collapse specific skills into generic categories like "AI tools", "various technologies", "modern frameworks", etc. Each MATCH from Step 2 must appear with its literal name (e.g., "OpenAI API", "LangChain", "LangGraph", "Claude CLI", "RAG", "Keycloak (OAuth2)"), never replaced by an umbrella term. "skillsSections" must retain separate categories (Back End, Front End, Databases, DevOps & Cloud, AI, etc.) just like MASTER_CV, instead of flattening everything into a single generic "Technical Skills" list: each MASTER_CV category with at least one MATCH must be kept as its own section, listing ALL its MATCHES (not just 2 or 3 examples).
+5. Distribution of MATCHES not appearing in any specific experience: if a Step 2 MATCH is in MASTER_CV Technical Skills but NOT in any experience bullets, add it spread out as a new bullet across the TWO most recent experiences (the first two in Experience list). Write each new bullet as a genuine, plausible application of that skill in that experience context (e.g., "Applied/Utilized [skill] for [reasonable task]"), WITHOUT inventing numbers, percentages, or impact metrics that do not already exist in MASTER_CV.
+6. MANDATORY: the "experience" array in output JSON must include ALL companies/experiences appearing in MASTER_CV's Experience section, in the same order, without omitting any. Never remove an entire experience to "save space": instead, for less relevant experiences to JOB_POSTING, reduce non-matching bullets (1-2 generic bullets is fine) rather than dropping the whole company.
+7. Keep the CV concise (equivalent to 1-2 pages) by trimming non-matching bullets, never trimming confirmed MATCHES or entire experiences.
 8. ${CV_JSON_SCHEMA_DESCRIPTION}
 `.trim();
 
@@ -108,15 +113,15 @@ Instrucciones adicionales:
     const firstBrace = trimmed.indexOf("{");
     const lastBrace = trimmed.lastIndexOf("}");
     if (firstBrace === -1 || lastBrace === -1 || lastBrace < firstBrace) {
-      throw new Error("La respuesta de la IA no contiene un JSON válido.");
+      throw new Error(getMessage("errInvalidJsonResponse") || "AI response does not contain valid JSON.");
     }
     const jsonSlice = trimmed.slice(firstBrace, lastBrace + 1);
     try {
       return JSON.parse(jsonSlice);
     } catch (err) {
       throw new Error(
-        "No se pudo interpretar el JSON devuelto por la IA (puede estar truncado por límite de tokens). " +
-          `Detalle: ${err.message}`
+        getMessage("errParseJson", [err.message]) ||
+        `Could not parse JSON returned by AI (may be truncated due to token limit). Detail: ${err.message}`
       );
     }
   }
@@ -174,7 +179,7 @@ Instrucciones adicionales:
 
   async function sendPromptGeneric(config, systemPrompt, userPrompt) {
     if (!config.endpoint) {
-      throw new Error("Configura un endpoint para el proveedor genérico en Opciones.");
+      throw new Error(getMessage("errMissingEndpoint") || "Please configure an endpoint for the generic provider in Options.");
     }
     const model = config.model || "";
     const res = await fetch(config.endpoint, {
@@ -197,7 +202,6 @@ Instrucciones adicionales:
       throw new Error(`Generic provider error (${res.status}): ${errText}`);
     }
     const data = await res.json();
-    // Best-effort: support OpenAI-compatible shape first, fall back to plain text field.
     return data.choices?.[0]?.message?.content || data.text || JSON.stringify(data);
   }
 
@@ -209,8 +213,12 @@ Instrucciones adicionales:
 
   async function generateTailoredCv(config, cvMasterMarkdown, jobPostingText, lang) {
     const sender = PROVIDERS[config.provider];
-    if (!sender) throw new Error(`Proveedor de IA desconocido: ${config.provider}`);
-    if (!config.apiKey) throw new Error("Falta configurar el API key en Opciones.");
+    if (!sender) {
+      throw new Error(getMessage("errUnknownProvider", [config.provider]) || `Unknown AI provider: ${config.provider}`);
+    }
+    if (!config.apiKey) {
+      throw new Error(getMessage("errMissingApiKey") || "API key is missing in Options.");
+    }
 
     const { systemPrompt, userPrompt } = buildPrompts(cvMasterMarkdown, jobPostingText, lang);
     const rawText = await sender(config, systemPrompt, userPrompt);
@@ -218,40 +226,50 @@ Instrucciones adicionales:
   }
 
   function buildCoverLetterPrompts(cvMasterMarkdown, jobPostingText, lang, metadata) {
-    const langNames = { es: "español", en: "English", pt: "português" };
+    const langNames = {
+      es: getMessage("langEs") || "Spanish",
+      en: getMessage("langEn") || "English",
+      pt: getMessage("langPt") || "Portuguese"
+    };
     const langLabel = langNames[lang] || lang;
-    const company = metadata?.company && !["Empresa Confidencial", "No especificada"].includes(metadata.company)
+
+    const confidentialCo = getMessage("promptConfidentialCompany") || "Confidential Company";
+    const unspecifiedCo = getMessage("promptUnspecified") || "Unspecified";
+    const defaultCo = getMessage("promptDefaultCompany") || "the company";
+    const defaultRole = getMessage("promptDefaultRole") || "the position";
+
+    const company = metadata?.company && ![confidentialCo, unspecifiedCo, "Empresa Confidencial", "No especificada"].includes(metadata.company)
       ? metadata.company
-      : "la empresa";
-    const role = metadata?.role || "la posición";
+      : defaultCo;
+    const role = metadata?.role || defaultRole;
 
     const systemPrompt =
-      `Eres un redactor experto en cartas de presentación (cover letters) para ingenieros de software senior y líderes técnicos. ` +
-      `Tu objetivo es redactar un texto directo, persuasivo y humano, de ingeniero a líder técnico o engineering manager. ` +
-      `REGLAS CRÍTICAS DE ESTILO (FILTRO ANTI-CLICHÉS DE IA): ` +
-      `1. PROHIBIDO usar fórmulas artificiales o acartonadas como "Espero que este mensaje te encuentre bien", "Escribo con gran entusiasmo", "Me dirijo a ustedes", "Estimado equipo de contratación", "Empresa innovadora/líder", "Apasionado por la tecnología", etc. ` +
-      `2. PROHIBIDO resumir el currículum de forma cronológica. ` +
-      `3. TONO: Seguro, fluido, conversacional pero formal, profesional y centrado en la resolución pragmática de problemas técnicos reales. ` +
-      `4. ESTRUCTURA (máximo 220-280 palabras, 3 o 4 párrafos cortos): ` +
-      `   - Párrafo 1: Apertura directa mencionando el rol (${role}) en ${company} y qué reto técnico específico o aspecto del producto/arquitectura captó tu atención. ` +
-      `   - Párrafo 2: Conexión técnica genuina. Toma los 2 mayores desafíos técnicos de la oferta y explica brevemente cómo los abordaste con éxito en experiencias reales de tu CV_MAESTRO (Spring Boot, microservicios, IA generativa, bases de datos, nube, etc.), sin inventar métricas falsas. ` +
-      `   - Párrafo 3: Por qué tu perfil y momento profesional encajan de manera natural con el desafío del equipo. ` +
-      `   - Párrafo 4 / Cierre: Una línea breve invitando a una conversación técnica para profundizar en cómo aportar al equipo, seguida de una despedida sobria y el nombre del candidato. ` +
-      `5. IDIOMA: Todo el texto debe estar escrito 100% en ${langLabel}.`;
+      `You are an expert writer of cover letters for senior software engineers and tech leads. ` +
+      `Your goal is to write a direct, persuasive, and human text, from engineer to tech lead or engineering manager. ` +
+      `CRITICAL STYLE RULES (ANTI-AI CLICHÉ FILTER): ` +
+      `1. FORBIDDEN to use artificial or stiff formulas like "I hope this message finds you well", "I am writing with great enthusiasm", "To whom it may concern", "Dear hiring team", "Innovative/leading company", "Passionate about technology", etc. ` +
+      `2. FORBIDDEN to summarize the resume chronologically. ` +
+      `3. TONE: Confident, fluent, conversational yet formal, professional, and focused on pragmatic resolution of real technical challenges. ` +
+      `4. STRUCTURE (maximum 220-280 words, 3 or 4 short paragraphs): ` +
+      `   - Paragraph 1: Direct opening mentioning the role (${role}) at ${company} and what specific technical challenge or product/architecture aspect caught your attention. ` +
+      `   - Paragraph 2: Genuine technical connection. Take the 2 biggest technical challenges from the offer and briefly explain how you successfully addressed them in real experiences from MASTER_CV (Spring Boot, microservices, generative AI, databases, cloud, etc.), without inventing false metrics. ` +
+      `   - Paragraph 3: Why your profile and professional timing naturally fit the team's challenge. ` +
+      `   - Paragraph 4 / Closing: A brief line inviting a technical conversation to delve deeper into how to contribute to the team, followed by a sober sign-off and the candidate's name. ` +
+      `5. LANGUAGE: All text must be written 100% in ${langLabel}.`;
 
     const userPrompt = `
-CV_MAESTRO:
+MASTER_CV:
 """
 ${cvMasterMarkdown}
 """
 
-OFERTA_DE_TRABAJO:
+JOB_POSTING:
 """
 ${jobPostingText}
 """
 
-Redacta la carta de presentación siguiendo las instrucciones del sistema.
-Devuelve EXCLUSIVAMENTE un objeto JSON con esta forma exacta (sin texto extra ni bloques de código markdown):
+Write the cover letter following system instructions.
+Return EXCLUSIVELY a JSON object with this exact shape (no extra text or markdown code blocks):
 {
   "coverLetter": string
 }
@@ -262,8 +280,12 @@ Devuelve EXCLUSIVAMENTE un objeto JSON con esta forma exacta (sin texto extra ni
 
   async function generateCoverLetter(config, cvMasterMarkdown, jobPostingText, lang, metadata) {
     const sender = PROVIDERS[config.provider];
-    if (!sender) throw new Error(`Proveedor de IA desconocido: ${config.provider}`);
-    if (!config.apiKey) throw new Error("Falta configurar el API key en Opciones.");
+    if (!sender) {
+      throw new Error(getMessage("errUnknownProvider", [config.provider]) || `Unknown AI provider: ${config.provider}`);
+    }
+    if (!config.apiKey) {
+      throw new Error(getMessage("errMissingApiKey") || "API key is missing in Options.");
+    }
 
     const { systemPrompt, userPrompt } = buildCoverLetterPrompts(cvMasterMarkdown, jobPostingText, lang, metadata);
     const rawText = await sender(config, systemPrompt, userPrompt);

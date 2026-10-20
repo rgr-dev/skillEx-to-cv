@@ -78,18 +78,16 @@ function checkExperienceCompleteness(cvMasterMarkdown, data) {
   const expectedCount = countMasterExperiences(cvMasterMarkdown);
   const actualCount = (data.experience || []).length;
   if (expectedCount > 0 && actualCount < expectedCount) {
-    showError(
-      new Error(
-        `Aviso: el CV maestro tiene ${expectedCount} experiencias, pero la IA solo devolvió ${actualCount}. ` +
-          "Usa \"Regenerar\" o revisa el resultado antes de exportar."
-      )
-    );
+    const warningMsg = getMessage("warnExperienceMismatch", [expectedCount.toString(), actualCount.toString()]) ||
+      `Warning: Master CV has ${expectedCount} experiences, but AI returned only ${actualCount}. Use "Regenerate" or review before exporting.`;
+    showError(new Error(warningMsg));
   }
 }
 
 function updateDocumentTitle(data) {
-  const rawName = data.name || "Roger_Moreno";
-  const rawRole = data.metadata?.role || "Puesto";
+  const defaultRoleStr = getMessage("promptDefaultRole") || "Role";
+  const rawName = data.name || "CV";
+  const rawRole = data.metadata?.role || defaultRoleStr;
   const rawCompany = data.metadata?.company || "";
 
   const sanitize = (str) =>
@@ -100,9 +98,15 @@ function updateDocumentTitle(data) {
       .trim()
       .replace(/\s+/g, "_");
 
+  const confidentialCo = (getMessage("promptConfidentialCompany") || "Confidential Company").replace(/\s+/g, "_");
+  const unspecifiedCo = (getMessage("promptUnspecified") || "Unspecified").replace(/\s+/g, "_");
+  const defaultCo = (getMessage("promptDefaultCompany") || "Company").replace(/\s+/g, "_");
+
   const parts = ["CV", sanitize(rawName), sanitize(rawRole)];
-  if (rawCompany && !["Empresa_Confidencial", "No_especificada", "Empresa"].includes(sanitize(rawCompany))) {
-    parts.push(sanitize(rawCompany));
+  const sanitizedCompany = sanitize(rawCompany);
+
+  if (sanitizedCompany && ![confidentialCo, unspecifiedCo, defaultCo, "Empresa_Confidencial", "No_especificada", "Empresa", "Company"].includes(sanitizedCompany)) {
+    parts.push(sanitizedCompany);
   }
   document.title = parts.filter(Boolean).join("_");
 }
@@ -114,8 +118,11 @@ function renderAtsMatch(metadata, atsMatch) {
   }
 
   // Metadatos
-  atsCompany.textContent = metadata?.company || "Empresa";
-  atsRole.textContent = metadata?.role || "Puesto solicitado";
+  const defaultCompanyStr = getMessage("promptDefaultCompany") || "Company";
+  const defaultRoleStr = getMessage("promptDefaultRole") || "Role";
+
+  atsCompany.textContent = metadata?.company || defaultCompanyStr;
+  atsRole.textContent = metadata?.role || defaultRoleStr;
 
   // Score y barra
   const rawScore = Number(atsMatch?.score);
@@ -133,23 +140,28 @@ function renderAtsMatch(metadata, atsMatch) {
 
   matchedCount.textContent = matched.length;
   missingCount.textContent = missing.length;
-  atsSummaryCounts.textContent = `(${matched.length} coincidentes / ${missing.length} faltantes)`;
+  atsSummaryCounts.textContent = getMessage("atsSummaryCounts", [matched.length.toString(), missing.length.toString()]) ||
+    `(${matched.length} matching / ${missing.length} missing)`;
+
+  const emptyMatchedHint = getMessage("atsEmptyMatched") || "No explicit matches detected.";
+  const emptyMissingHint = getMessage("atsEmptyMissing") || "Excellent! Your CV covers all mentioned requirements.";
 
   matchedSkillsTags.innerHTML = matched.length
     ? matched.map((skill) => `<span class="ats-tag match">${escapeHtmlText(skill)}</span>`).join("")
-    : '<span class="ats-empty-hint">No se detectaron coincidencias explícitas.</span>';
+    : `<span class="ats-empty-hint">${escapeHtmlText(emptyMatchedHint)}</span>`;
 
   missingSkillsTags.innerHTML = missing.length
     ? missing
-        .map(
-          (skill) => `
-      <span class="ats-tag gap" data-skill="${escapeHtmlText(skill)}">
-        ${escapeHtmlText(skill)}
-        <button class="quick-add-tag-btn" data-skill="${escapeHtmlText(skill)}" title="Añadir '${escapeHtmlText(skill)}' a tu CV Maestro">+</button>
-      </span>`
-        )
+        .map((skill) => {
+          const btnTitle = getMessage("titleAddSkillToMasterCv", [skill]) || `Add '${skill}' to your Master CV`;
+          return `
+            <span class="ats-tag gap" data-skill="${escapeHtmlText(skill)}">
+              ${escapeHtmlText(skill)}
+              <button class="quick-add-tag-btn" data-skill="${escapeHtmlText(skill)}" title="${escapeHtmlText(btnTitle)}">+</button>
+            </span>`;
+        })
         .join("")
-    : '<span class="ats-empty-hint">¡Excelente! Tu CV cubre todos los requisitos mencionados.</span>';
+    : `<span class="ats-empty-hint">${escapeHtmlText(emptyMissingHint)}</span>`;
 
   // Conectar botones de quick-add
   missingSkillsTags.querySelectorAll(".quick-add-tag-btn").forEach((btn) => {
@@ -170,11 +182,11 @@ function escapeHtmlText(str) {
     .replace(/>/g, "&gt;");
 }
 
-function showToast(message, showAction = false, actionText = "Regenerar CV", onAction = null) {
+function showToast(message, showAction = false, actionText = null, onAction = null) {
   toastMsg.textContent = message;
   toastActionBtn.hidden = !showAction;
   if (showAction) {
-    toastActionBtn.textContent = actionText;
+    toastActionBtn.textContent = actionText || (getMessage("btnRegenerateCv") || "Regenerate CV");
     toastActionBtn.onclick = () => {
       hideToast();
       if (onAction) onAction();
@@ -195,12 +207,13 @@ function updateEditModeUI() {
   cvContainer.classList.toggle("editing-mode", isEditMode);
   if (isEditMode) {
     editToggleBtn.classList.add("btn-active");
-    editToggleBtn.textContent = "Modo Edición: Activo ✓";
+    editToggleBtn.textContent = getMessage("btnEditModeActive") || "Edit Mode: Active ✓";
     setCvContentEditable(true);
-    showToast("Modo edición activo. Haz clic sobre cualquier parte del CV para modificarlo directamente antes de exportar.", false);
+    const noticeMsg = getMessage("msgEditModeActiveNotice") || "Edit mode active. Click on any part of the CV to modify it directly before exporting.";
+    showToast(noticeMsg, false);
   } else {
     editToggleBtn.classList.remove("btn-active");
-    editToggleBtn.textContent = "Editar CV ✏️";
+    editToggleBtn.textContent = getMessage("btnEditCv") || "Edit CV ✏️";
     setCvContentEditable(false);
   }
 }
@@ -253,7 +266,13 @@ function extractMasterCategories(markdown) {
     }
   }
 
-  return categories.length ? categories : ["Back End", "Front End", "Bases de Datos", "DevOps & Cloud", "Otras Habilidades"];
+  return categories.length ? categories : [
+    getMessage("catBackEnd") || "Back End",
+    getMessage("catFrontEnd") || "Front End",
+    getMessage("catDatabases") || "Databases",
+    getMessage("catDevOpsCloud") || "DevOps & Cloud",
+    getMessage("catOtherSkills") || "Other Skills"
+  ];
 }
 
 function addSkillToMasterMarkdown(markdown, category, skill) {
@@ -324,10 +343,14 @@ if (modalConfirmBtn) {
       await SkillExStorage.setCvMarkdown(currentLang, updatedMd);
       closeQuickAddModal();
 
+      const successNotice = getMessage("msgSkillAddedToMasterCv", [skill, category, currentLang.toUpperCase()]) ||
+        `"${skill}" was added to "${category}" in your Master CV (${currentLang.toUpperCase()})!`;
+      const btnRegenerateText = getMessage("btnRegenerateCvNow") || "Regenerate CV now";
+
       showToast(
-        `¡"${skill}" se añadió a "${category}" en tu CV Maestro (${currentLang.toUpperCase()})!`,
+        successNotice,
         true,
-        "Regenerar CV ahora",
+        btnRegenerateText,
         () => runGeneration(currentLang)
       );
     } catch (err) {
@@ -345,7 +368,9 @@ async function runGeneration(lang) {
   cvContainer.innerHTML = "";
   atsPanel.hidden = true;
   atsBarFill.style.width = "0%";
-  setStatus("Generando CV con IA…");
+
+  const statusGenerating = getMessage("statusGeneratingCv") || "Generating CV with AI…";
+  setStatus(statusGenerating);
 
   try {
     const config = await SkillExStorage.getConfig();
@@ -353,9 +378,9 @@ async function runGeneration(lang) {
     const cvMasterMarkdown = cvMap[lang];
 
     if (!cvMasterMarkdown) {
-      throw new Error(
-        `No hay un CV maestro configurado para el idioma "${lang}". Cárgalo en Opciones.`
-      );
+      const noMasterCvErr = getMessage("errNoMasterCvForLang", [lang]) ||
+        `No master CV configured for language "${lang}". Load it in Options.`;
+      throw new Error(noMasterCvErr);
     }
 
     const data = await SkillExAiProviders.generateTailoredCv(
@@ -374,29 +399,36 @@ async function runGeneration(lang) {
     updateDocumentTitle(data);
 
     lastGeneratedData = data;
-    await saveApplicationRecord("Generado");
+    const statusGeneratedStr = getMessage("statusGenerated") || "Generated";
+    await saveApplicationRecord(statusGeneratedStr);
 
-    setStatus("CV generado. Revisa el contenido antes de exportar.");
+    const statusReviewStr = getMessage("statusCvGeneratedReview") || "CV generated. Review content before exporting.";
+    setStatus(statusReviewStr);
     exportBtn.disabled = false;
     checkExperienceCompleteness(cvMasterMarkdown, data);
   } catch (err) {
-    setStatus("Ocurrió un error durante la generación.");
+    const statusErrorStr = getMessage("statusGenerationError") || "An error occurred during generation.";
+    setStatus(statusErrorStr);
     showError(err);
   } finally {
     regenerateBtn.disabled = false;
   }
 }
 
-async function saveApplicationRecord(status = "Generado") {
+async function saveApplicationRecord(status = null) {
   if (!lastGeneratedData) return;
   const rawScore = Number(lastGeneratedData.atsMatch?.score);
   const score = isNaN(rawScore) ? 0 : Math.max(0, Math.min(100, Math.round(rawScore)));
 
+  const defaultCompanyStr = getMessage("promptConfidentialCompany") || "Confidential Company";
+  const defaultRoleStr = getMessage("promptDefaultRole") || "Requested Role";
+  const defaultStatusStr = status || (getMessage("statusGenerated") || "Generated");
+
   try {
     const record = await SkillExStorage.saveApplication({
       id: currentApplicationId || undefined,
-      company: lastGeneratedData.metadata?.company || "Empresa Confidencial",
-      role: lastGeneratedData.metadata?.role || "Puesto solicitado",
+      company: lastGeneratedData.metadata?.company || defaultCompanyStr,
+      role: lastGeneratedData.metadata?.role || defaultRoleStr,
       matchScore: score,
       matchedSkills: Array.isArray(lastGeneratedData.atsMatch?.matchedSkills)
         ? lastGeneratedData.atsMatch.matchedSkills
@@ -406,20 +438,22 @@ async function saveApplicationRecord(status = "Generado") {
         : [],
       lang: currentLang,
       sourceUrl: currentSourceUrl,
-      status
+      status: defaultStatusStr
     });
     if (record && record.id) {
       currentApplicationId = record.id;
     }
   } catch (err) {
-    console.error("Error guardando postulación en el historial:", err);
+    console.error("Error saving application to history:", err);
   }
 }
 
 async function init() {
   const pending = await SkillExStorage.getPendingSelection();
   if (!pending || !pending.text) {
-    setStatus("No hay ninguna selección pendiente. Selecciona texto en la oferta y usa el menú contextual.");
+    const noSelectionStatus = getMessage("statusNoPendingSelection") ||
+      "No pending selection found. Select text in a job posting and use the context menu.";
+    setStatus(noSelectionStatus);
     return;
   }
 
@@ -441,7 +475,8 @@ langSelect.addEventListener("change", () => {
 regenerateBtn.addEventListener("click", () => runGeneration(currentLang));
 
 exportBtn.addEventListener("click", async () => {
-  await saveApplicationRecord("Exportado");
+  const statusExportedStr = getMessage("statusExported") || "Exported";
+  await saveApplicationRecord(statusExportedStr);
   SkillExPdfExporter.exportToPdf();
 });
 
@@ -468,7 +503,9 @@ async function runCoverLetterGeneration() {
     const cvMasterMarkdown = cvMap[currentLang];
 
     if (!cvMasterMarkdown) {
-      throw new Error(`No hay un CV maestro configurado para el idioma "${currentLang}". Cárgalo en Opciones.`);
+      const noMasterCvErr = getMessage("errNoMasterCvForLang", [currentLang]) ||
+        `No master CV configured for language "${currentLang}". Load it in Options.`;
+      throw new Error(noMasterCvErr);
     }
 
     const letter = await SkillExAiProviders.generateCoverLetter(
@@ -481,12 +518,15 @@ async function runCoverLetterGeneration() {
 
     currentCoverLetter = letter;
     clText.textContent = letter;
+    clLoading.hidden = false;
     clLoading.hidden = true;
     clContentBox.hidden = false;
   } catch (err) {
     clLoading.hidden = true;
     clContentBox.hidden = false;
-    clText.textContent = `Error al generar la carta de presentación: ${err.message || String(err)}`;
+    const errPrefix = getMessage("errGeneratingCoverLetter", [err.message || String(err)]) ||
+      `Error generating cover letter: ${err.message || String(err)}`;
+    clText.textContent = errPrefix;
   } finally {
     clRegenerateBtn.disabled = false;
     clCopyBtn.disabled = false;
@@ -517,14 +557,15 @@ if (clCopyBtn) {
     try {
       await navigator.clipboard.writeText(textToCopy);
       const originalText = clCopyBtn.textContent;
-      clCopyBtn.textContent = "¡Copiado! ✓";
+      const copiedStr = getMessage("btnCopiedSuccess") || "Copied! ✓";
+      clCopyBtn.textContent = copiedStr;
       clCopyBtn.classList.add("btn-copied");
       setTimeout(() => {
         clCopyBtn.textContent = originalText;
         clCopyBtn.classList.remove("btn-copied");
       }, 2000);
     } catch (err) {
-      console.error("Error al copiar al portapapeles:", err);
+      console.error("Error copying to clipboard:", err);
     }
   });
 }

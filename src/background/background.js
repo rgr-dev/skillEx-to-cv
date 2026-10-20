@@ -8,7 +8,7 @@ browser.runtime.onInstalled.addListener(async () => {
 
 browser.contextMenus.create({
   id: MENU_ID,
-  title: 'Generar CV con estas skills ("%s")',
+  title: getMessage('generateCv'),
   contexts: ["selection"]
 });
 

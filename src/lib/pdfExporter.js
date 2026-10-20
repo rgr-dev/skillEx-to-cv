@@ -21,7 +21,7 @@
   }
 
   function setActiveStrategy(name) {
-    if (!strategies[name]) throw new Error(`Estrategia de exportación desconocida: ${name}`);
+    if (!strategies[name]) throw new Error(getMessage("UnkwExportStrategy", [name]));
     activeStrategyName = name;
   }
 

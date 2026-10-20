@@ -1,37 +1,37 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>SkillEx to CV — Generación</title>
+  <title>SkillEx to CV — Generation</title>
   <link rel="stylesheet" href="../templates/harvard.css" />
   <link rel="stylesheet" href="review.css" />
 </head>
 <body>
   <div class="toolbar no-print">
-    <div class="toolbar-status" id="status">Preparando…</div>
+    <div class="toolbar-status" id="status" data-i18n="statusPreparing">Preparing…</div>
     <div class="toolbar-actions">
       <select id="lang-select">
-        <option value="es">Español</option>
-        <option value="en">English</option>
-        <option value="pt">Português</option>
+        <option value="es" data-i18n="langEs">Spanish</option>
+        <option value="en" data-i18n="langEn">English</option>
+        <option value="pt" data-i18n="langPt">Portuguese</option>
       </select>
-      <button id="edit-toggle-btn" class="btn-secondary" title="Habilita la edición directa de los textos del CV">Editar CV ✏️</button>
-      <button id="cover-letter-btn" class="btn-secondary" title="Genera una carta de presentación adaptada a la oferta">Cover Letter ✉️</button>
-      <button id="regenerate-btn" disabled>Regenerar</button>
-      <button id="export-btn" disabled>Exportar a PDF</button>
-      <button id="history-btn" class="btn-secondary">Historial</button>
+      <button id="edit-toggle-btn" class="btn-secondary" data-i18n-title="btnEditCvTitle" title="Enables direct editing of CV text" data-i18n="btnEditCv">Edit CV ✏️</button>
+      <button id="cover-letter-btn" class="btn-secondary" data-i18n-title="btnCoverLetterTitle" title="Generates a cover letter tailored to the job offer" data-i18n="btnCoverLetter">Cover Letter ✉️</button>
+      <button id="regenerate-btn" disabled data-i18n="btnRegenerate">Regenerate</button>
+      <button id="export-btn" disabled data-i18n="btnExportPdf">Export to PDF</button>
+      <button id="history-btn" class="btn-secondary" data-i18n="btnHistory">History</button>
     </div>
   </div>
 
   <div id="toast-alert" class="toast-alert no-print" hidden>
     <span id="toast-msg"></span>
-    <button id="toast-action-btn" class="btn-toast-action" hidden>Regenerar CV</button>
+    <button id="toast-action-btn" class="btn-toast-action" hidden data-i18n="btnRegenerateCv">Regenerate CV</button>
     <button id="toast-close-btn" class="toast-close">&times;</button>
   </div>
 
   <div id="job-posting-box" class="no-print">
     <details>
-      <summary>Texto detectado de la oferta</summary>
+      <summary data-i18n="summaryDetectedJobText">Detected job posting text</summary>
       <pre id="job-posting-text"></pre>
     </details>
   </div>
@@ -40,12 +40,12 @@
     <div class="ats-card">
       <div class="ats-header">
         <div class="ats-meta">
-          <span class="ats-company" id="ats-company">Empresa</span>
+          <span class="ats-company" id="ats-company" data-i18n="atsCompany">Company</span>
           <span class="ats-divider">•</span>
-          <span class="ats-role" id="ats-role">Puesto</span>
+          <span class="ats-role" id="ats-role" data-i18n="atsRole">Role</span>
         </div>
         <div class="ats-score-badge" id="ats-score-badge">
-          <span class="ats-score-num" id="ats-score-num">0</span>% Match ATS
+          <span class="ats-score-num" id="ats-score-num">0</span><span data-i18n="atsScoreMatch">% ATS Match</span>
         </div>
       </div>
       <div class="ats-bar-wrapper">
@@ -54,16 +54,20 @@
       <div class="ats-skills-details">
         <details open>
           <summary>
-            <strong>Auditoría de Skills ATS:</strong>
+            <strong data-i18n="atsAuditTitle">ATS Skills Audit:</strong>
             <span class="ats-summary-counts" id="ats-summary-counts"></span>
           </summary>
           <div class="ats-skills-grid">
             <div class="ats-skills-col">
-              <div class="ats-col-title match">✓ Coincidentes incorporadas (<span id="matched-count">0</span>)</div>
+              <div class="ats-col-title match">
+                <span data-i18n="atsMatchedTitle">✓ Matching incorporated</span> (<span id="matched-count">0</span>)
+              </div>
               <div class="ats-tags" id="matched-skills-tags"></div>
             </div>
             <div class="ats-skills-col">
-              <div class="ats-col-title gap">✗ Faltantes en tu CV maestro (<span id="missing-count">0</span>)</div>
+              <div class="ats-col-title gap">
+                <span data-i18n="atsMissingTitle">✗ Missing in your Master CV</span> (<span id="missing-count">0</span>)
+              </div>
               <div class="ats-tags" id="missing-skills-tags"></div>
             </div>
           </div>
@@ -80,17 +84,22 @@
   <div id="quick-add-modal" class="modal-overlay no-print" hidden>
     <div class="modal-card">
       <div class="modal-header">
-        <h3>Añadir Skill a CV Maestro</h3>
+        <h3 data-i18n="modalQuickAddTitle">Add Skill to Master CV</h3>
         <button id="modal-close-btn" class="modal-close">&times;</button>
       </div>
       <div class="modal-body">
-        <p>Vas a incorporar <strong id="modal-skill-name"></strong> a tu CV Maestro (<span id="modal-skill-lang"></span>):</p>
-        <label for="modal-category-select">Categoría técnica de destino:</label>
+        <p>
+          <span data-i18n="modalAddNoticeBefore">You are adding</span>
+          <strong id="modal-skill-name"></strong>
+          <span data-i18n="modalAddNoticeMiddle">to your Master CV</span>
+          (<span id="modal-skill-lang"></span>):
+        </p>
+        <label for="modal-category-select" data-i18n="modalTargetCategory">Target technical category:</label>
         <select id="modal-category-select"></select>
       </div>
       <div class="modal-footer">
-        <button id="modal-cancel-btn" class="btn-secondary">Cancelar</button>
-        <button id="modal-confirm-btn" class="btn-success">Añadir al CV Maestro</button>
+        <button id="modal-cancel-btn" class="btn-secondary" data-i18n="btnCancel">Cancel</button>
+        <button id="modal-confirm-btn" class="btn-success" data-i18n="btnAddToMasterCv">Add to Master CV</button>
       </div>
     </div>
   </div>
@@ -99,31 +108,33 @@
   <div id="cover-letter-modal" class="modal-overlay no-print" hidden>
     <div class="modal-card modal-large">
       <div class="modal-header">
-        <h3>Carta de Presentación (Cover Letter)</h3>
+        <h3 data-i18n="modalCoverLetterTitle">Cover Letter</h3>
         <button id="cl-close-btn" class="modal-close">&times;</button>
       </div>
       <div class="modal-body">
         <div id="cl-loading" class="cl-loading" hidden>
           <div class="cl-spinner"></div>
-          <span>Redactando carta de presentación con IA…</span>
+          <span data-i18n="clWritingProgress">Drafting cover letter with AI…</span>
         </div>
         <div id="cl-content-box">
-          <p class="cl-hint">Texto generado para la oferta. Puedes editarlo directamente antes de copiarlo:</p>
+          <p class="cl-hint" data-i18n="clHint">Generated text for the job offer. You can edit it directly before copying:</p>
           <div id="cl-text" class="cl-text" contenteditable="true" spellcheck="false"></div>
         </div>
       </div>
       <div class="modal-footer modal-footer-split">
         <div class="modal-footer-left">
-          <button id="cl-regenerate-btn" class="btn-secondary">Regenerar 🔄</button>
+          <button id="cl-regenerate-btn" class="btn-secondary" data-i18n="btnRegenerateWithIcon">Regenerate 🔄</button>
         </div>
         <div class="modal-footer-right">
-          <button id="cl-copy-btn" class="btn-success">Copiar texto 📋</button>
-          <button id="cl-cancel-btn" class="btn-secondary">Cerrar</button>
+          <button id="cl-copy-btn" class="btn-success" data-i18n="btnCopyText">Copy text 📋</button>
+          <button id="cl-cancel-btn" class="btn-secondary" data-i18n="btnClose">Close</button>
         </div>
       </div>
     </div>
   </div>
 
+  <script src="../lib/i18n-helper.js"></script>
+  <script src="../lib/i18n.js"></script>
   <script src="../lib/storage.js"></script>
   <script src="../lib/langDetect.js"></script>
   <script src="../lib/aiProviders.js"></script>

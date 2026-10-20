@@ -1,0 +1,406 @@
+{
+  "extensionName": {
+    "message": "SkillEx to CV"
+  },
+  "extensionDescription": {
+    "message": "Gera CVs adaptados a partir de vagas de emprego"
+  },
+  "generateCv": {
+    "message": "Gerar CV com estas habilidades"
+  },
+  "settings": {
+    "message": "Configurações"
+  },
+  "controlPanel": {
+    "message": "SkillEx to CV — Painel de Controle"
+  },
+  "saveMasterCv": {
+    "message": "Salvar CV principal"
+  },
+  "applicationHistory": {
+    "message": "Histórico de candidaturas"
+  },
+  "loading": {
+    "message": "Gerando seu CV adaptado..."
+  },
+  "errorGeneric": {
+    "message": "Algo deu errado. Tente novamente."
+  },
+  "AIProvider": {
+    "message": "Provedor de IA"
+  },
+  "AIProviderSec": {
+    "message": "Provedor"
+  },
+  "providerOptionAnthropic": {
+    "message": "Anthropic (Claude)"
+  },
+  "providerOptionOpenAI": {
+    "message": "OpenAI (GPT)"
+  },
+  "providerOptionGeneric": {
+    "message": "Genérico (endpoint compatível com OpenAI)"
+  },
+  "tabSettings": {
+    "message": "Configurações"
+  },
+  "tabApplicationHistory": {
+    "message": "Histórico de candidaturas"
+  },
+  "sectionAiProvider": {
+    "message": "Provedor de IA"
+  },
+  "labelProvider": {
+    "message": "Provedor"
+  },
+  "labelApiKey": {
+    "message": "API Key"
+  },
+  "placeholderApiKey": {
+    "message": "sk-... / chave de API"
+  },
+  "labelModel": {
+    "message": "Modelo (opcional)"
+  },
+  "placeholderModel": {
+    "message": "Ex: claude-sonnet-5, gpt-4o-mini"
+  },
+  "labelEndpoint": {
+    "message": "Endpoint (apenas provedor genérico)"
+  },
+  "placeholderEndpoint": {
+    "message": "https://meu-provedor.com/v1/chat/completions"
+  },
+  "btnSaveConfig": {
+    "message": "Salvar configurações"
+  },
+  "msgSaved": {
+    "message": "Salvo ✓"
+  },
+  "sectionMasterCv": {
+    "message": "CV principal por idioma"
+  },
+  "hintMasterCv": {
+    "message": "Este é o conteúdo base a partir do qual a IA monta cada CV adaptado. Edite diretamente ou envie um arquivo .md para substituí-lo."
+  },
+  "langEs": {
+    "message": "Espanhol"
+  },
+  "langEn": {
+    "message": "Inglês"
+  },
+  "langPt": {
+    "message": "Português"
+  },
+  "btnSaveMasterCv": {
+    "message": "Salvar CV principal"
+  },
+  "btnResetDefault": {
+    "message": "Restaurar valor padrão"
+  },
+  "metricTotal": {
+    "message": "Candidaturas geradas"
+  },
+  "metricCompanies": {
+    "message": "Empresas distintas"
+  },
+  "metricAvgScore": {
+    "message": "Média de Match ATS"
+  },
+  "btnExportCsv": {
+    "message": "Exportar para Excel (.csv)"
+  },
+  "btnExportJson": {
+    "message": "Exportar JSON"
+  },
+  "btnClearHistory": {
+    "message": "Limpar histórico"
+  },
+  "thDate": {
+    "message": "Data"
+  },
+  "thCompany": {
+    "message": "Empresa"
+  },
+  "thRole": {
+    "message": "Cargo"
+  },
+  "thMatchAts": {
+    "message": "Match ATS"
+  },
+  "thSkills": {
+    "message": "Habilidades"
+  },
+  "thStatus": {
+    "message": "Status"
+  },
+  "thActions": {
+    "message": "Ações"
+  },
+  "historyEmpty": {
+    "message": "Nenhuma candidatura registrada ainda. Selecione o texto em uma vaga de emprego e gere seu primeiro CV adaptado."
+  },
+  "statusPreparing": {
+    "message": "Preparando…"
+  },
+  "btnEditCvTitle": {
+    "message": "Permite a edição direta dos textos do CV"
+  },
+  "btnEditCv": {
+    "message": "Editar CV ✏️"
+  },
+  "btnCoverLetterTitle": {
+    "message": "Gera uma carta de apresentação adaptada à vaga"
+  },
+  "btnCoverLetter": {
+    "message": "Carta de Apresentação ✉️"
+  },
+  "btnRegenerate": {
+    "message": "Regerar"
+  },
+  "btnExportPdf": {
+    "message": "Exportar para PDF"
+  },
+  "btnHistory": {
+    "message": "Histórico"
+  },
+  "btnRegenerateCv": {
+    "message": "Regerar CV"
+  },
+  "summaryDetectedJobText": {
+    "message": "Texto detectado da vaga"
+  },
+  "atsCompany": {
+    "message": "Empresa"
+  },
+  "atsRole": {
+    "message": "Cargo"
+  },
+  "atsScoreMatch": {
+    "message": "% Match ATS"
+  },
+  "atsAuditTitle": {
+    "message": "Auditoria de Habilidades ATS:"
+  },
+  "atsMatchedTitle": {
+    "message": "✓ Coincidentes incorporadas"
+  },
+  "atsMissingTitle": {
+    "message": "✗ Faltantes no seu CV principal"
+  },
+  "modalQuickAddTitle": {
+    "message": "Adicionar Habilidade ao CV Principal"
+  },
+  "modalAddNoticeBefore": {
+    "message": "Você vai incorporar"
+  },
+  "modalAddNoticeMiddle": {
+    "message": "ao seu CV Principal"
+  },
+  "modalTargetCategory": {
+    "message": "Categoria técnica de destino:"
+  },
+  "btnCancel": {
+    "message": "Cancelar"
+  },
+  "btnAddToMasterCv": {
+    "message": "Adicionar ao CV Principal"
+  },
+  "modalCoverLetterTitle": {
+    "message": "Carta de Apresentação (Cover Letter)"
+  },
+  "clWritingProgress": {
+    "message": "Escrevendo carta de apresentação com IA…"
+  },
+  "clHint": {
+    "message": "Texto gerado para a vaga. Você pode editá-lo diretamente antes de copiar:"
+  },
+  "btnRegenerateWithIcon": {
+    "message": "Regerar 🔄"
+  },
+  "btnCopyText": {
+    "message": "Copiar texto 📋"
+  },
+  "btnClose": {
+    "message": "Fechar"
+  },
+  "errInvalidJsonResponse": {
+    "message": "A resposta da IA não contém um JSON válido."
+  },
+  "errParseJson": {
+    "message": "Não foi possível interpretar o JSON retornado pela IA (pode estar truncado por limite de tokens). Detalhe: $1"
+  },
+  "errMissingEndpoint": {
+    "message": "Configure um endpoint para o provedor genérico nas Opções."
+  },
+  "errUnknownProvider": {
+    "message": "Provedor de IA desconhecido: $1"
+  },
+  "errMissingApiKey": {
+    "message": "Chave de API não configurada nas Opções."
+  },
+  "promptConfidentialCompany": {
+    "message": "Empresa Confidencial"
+  },
+  "promptUnspecified": {
+    "message": "Não especificada"
+  },
+  "promptDefaultCompany": {
+    "message": "a empresa"
+  },
+  "promptDefaultRole": {
+    "message": "a posição"
+  },
+  "UnkwExportStrategy": {
+    "message": "Estratégia de exportação desconhecida: $STRATEGY$",
+    "placeholders": {
+      "strategy": {
+        "content": "$1"
+      }
+    }
+  },
+  "exportedStatusCV": {
+    "message": "exportado"
+  },
+  "labelNone": {
+    "message": "Nenhuma"
+  },
+  "skillsTooltip": {
+    "message": "Coincidentes: $MATCHED$\nFaltando: $MISSING$",
+    "placeholders": {
+      "matched": { "content": "$1" },
+      "missing": { "content": "$2" }
+    }
+  },
+  "statusGenerated": {
+    "message": "Gerado"
+  },
+  "titleDeleteRecord": {
+    "message": "Excluir registro"
+  },
+  "titleOpenJobOffer": {
+    "message": "Abrir vaga original"
+  },
+  "linkOffer": {
+    "message": "Vaga ↗"
+  },
+  "pillSkillsSummary": {
+    "message": "$1 match / $2 faltantes",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" }
+    }
+  },
+  "confirmDeleteSingleApp": {
+    "message": "Deseja remover esta candidatura do histórico?"
+  },
+  "confirmClearAllHistory": {
+    "message": "Tem certeza de que deseja limpar TODO o histórico de candidaturas? Esta ação não pode ser desfeita."
+  },
+  "alertNoHistoryToExport": {
+    "message": "Não há registros no histórico para exportar."
+  },
+  "csvHeaderAtsScore": {
+    "message": "Pontuação ATS (%)"
+  },
+  "csvHeaderMatchedSkills": {
+    "message": "Habilidades Coincidentes"
+  },
+  "csvHeaderMissingSkills": {
+    "message": "Habilidades Faltantes"
+  },
+  "csvHeaderLanguage": {
+    "message": "Idioma"
+  },
+  "csvHeaderJobUrl": {
+    "message": "URL da Vaga"
+  },
+  "warnExperienceMismatch": {
+    "message": "Aviso: O CV principal possui $1 experiências, mas a IA retornou apenas $2. Use \"Regerar\" ou revise o resultado antes de exportar.",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" }
+    }
+  },
+  "atsSummaryCounts": {
+    "message": "($1 coincidentes / $2 faltantes)",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" }
+    }
+  },
+  "atsEmptyMatched": {
+    "message": "Nenhuma correspondência explícita detectada."
+  },
+  "atsEmptyMissing": {
+    "message": "Excelente! Seu CV cobre todos os requisitos mencionados."
+  },
+  "titleAddSkillToMasterCv": {
+    "message": "Adicionar '$1' ao seu CV Principal",
+    "placeholders": {
+      "1": { "content": "$1" }
+    }
+  },
+  "btnEditModeActive": {
+    "message": "Modo de Edição: Ativo ✓"
+  },
+  "msgEditModeActiveNotice": {
+    "message": "Modo de edição ativo. Clique em qualquer parte do CV para modificá-lo diretamente antes de exportar."
+  },
+  "catBackEnd": {
+    "message": "Back End"
+  },
+  "catFrontEnd": {
+    "message": "Front End"
+  },
+  "catDatabases": {
+    "message": "Bancos de Dados"
+  },
+  "catDevOpsCloud": {
+    "message": "DevOps & Nuvem"
+  },
+  "catOtherSkills": {
+    "message": "Outras Habilidades"
+  },
+  "msgSkillAddedToMasterCv": {
+    "message": "\"$1\" foi adicionada a \"$2\" no seu CV Principal ($3)!",
+    "placeholders": {
+      "1": { "content": "$1" },
+      "2": { "content": "$2" },
+      "3": { "content": "$3" }
+    }
+  },
+  "btnRegenerateCvNow": {
+    "message": "Regerar CV agora"
+  },
+  "statusGeneratingCv": {
+    "message": "Gerando CV com IA…"
+  },
+  "errNoMasterCvForLang": {
+    "message": "Nenhum CV principal configurado para o idioma \"$1\". Envie nas Opções.",
+    "placeholders": {
+      "1": { "content": "$1" }
+    }
+  },
+  "statusCvGeneratedReview": {
+    "message": "CV gerado. Revise o conteúdo antes de exportar."
+  },
+  "statusGenerationError": {
+    "message": "Ocorreu um erro durante a geração."
+  },
+  "statusExported": {
+    "message": "Exportado"
+  },
+  "statusNoPendingSelection": {
+    "message": "Nenhuma seleção pendente. Selecione o texto na vaga e use o menu de contexto."
+  },
+  "errGeneratingCoverLetter": {
+    "message": "Erro ao gerar a carta de apresentação: $1",
+    "placeholders": {
+      "1": { "content": "$1" }
+    }
+  },
+  "btnCopiedSuccess": {
+    "message": "Copiado! ✓"
+  }
+}

@@ -18,6 +18,7 @@
   ],
   "background": {
     "scripts": [
+      "src/lib/i18n-helper.js",
       "src/lib/storage.js",
       "src/background/background.js"
     ],

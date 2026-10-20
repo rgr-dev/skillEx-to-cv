@@ -1,0 +1,43 @@
+{
+  "manifest_version": 2,
+  "name": "SkillEx to CV",
+  "version": "1.0.0",
+  "description": "This extension generates CV aligned with skills asked for a given job offer from a master CV by language",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png",
+    "128": "icons/icon-128.png"
+  },
+  "permissions": [
+    "contextMenus",
+    "storage",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "src/lib/storage.js",
+      "src/background/background.js"
+    ],
+    "persistent": true
+  },
+  "options_ui": {
+    "page": "src/options/options.html",
+    "open_in_tab": true
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "skillex-to-cv@r.dev",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "web_accessible_resources": [
+    "cv-master.es.md",
+    "cv-master.en.md",
+    "cv-master.pt.md",
+    "src/templates/*"
+  ]
+}

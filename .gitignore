@@ -1,0 +1,25 @@
+# Personal files for CVs (they contain sensible data: Name, Telephone, email)
+# Replace them with your own master CV files before extension usage
+cv-master.es.md
+cv-master.en.md
+cv-master.pt.md
+
+# extension compressed zip file to be uploaded to Mozilla
+*.zip
+
+*.pdf
+*.xpi
+
+
+# SO system files
+.DS_Store
+Thumbs.db
+desktop.ini
+.directory
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>SkillEx to CV — Generación</title>
+  <link rel="stylesheet" href="../templates/harvard.css" />
+  <link rel="stylesheet" href="review.css" />
+</head>
+<body>
+  <div class="toolbar no-print">
+    <div class="toolbar-status" id="status">Preparando…</div>
+    <div class="toolbar-actions">
+      <select id="lang-select">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+        <option value="pt">Português</option>
+      </select>
+      <button id="edit-toggle-btn" class="btn-secondary" title="Habilita la edición directa de los textos del CV">Editar CV ✏️</button>
+      <button id="cover-letter-btn" class="btn-secondary" title="Genera una carta de presentación adaptada a la oferta">Cover Letter ✉️</button>
+      <button id="regenerate-btn" disabled>Regenerar</button>
+      <button id="export-btn" disabled>Exportar a PDF</button>
+      <button id="history-btn" class="btn-secondary">Historial</button>
+    </div>
+  </div>
+
+  <div id="toast-alert" class="toast-alert no-print" hidden>
+    <span id="toast-msg"></span>
+    <button id="toast-action-btn" class="btn-toast-action" hidden>Regenerar CV</button>
+    <button id="toast-close-btn" class="toast-close">&times;</button>
+  </div>
+
+  <div id="job-posting-box" class="no-print">
+    <details>
+      <summary>Texto detectado de la oferta</summary>
+      <pre id="job-posting-text"></pre>
+    </details>
+  </div>
+
+  <div id="ats-panel" class="no-print" hidden>
+    <div class="ats-card">
+      <div class="ats-header">
+        <div class="ats-meta">
+          <span class="ats-company" id="ats-company">Empresa</span>
+          <span class="ats-divider">•</span>
+          <span class="ats-role" id="ats-role">Puesto</span>
+        </div>
+        <div class="ats-score-badge" id="ats-score-badge">
+          <span class="ats-score-num" id="ats-score-num">0</span>% Match ATS
+        </div>
+      </div>
+      <div class="ats-bar-wrapper">
+        <div class="ats-bar-fill" id="ats-bar-fill"></div>
+      </div>
+      <div class="ats-skills-details">
+        <details open>
+          <summary>
+            <strong>Auditoría de Skills ATS:</strong>
+            <span class="ats-summary-counts" id="ats-summary-counts"></span>
+          </summary>
+          <div class="ats-skills-grid">
+            <div class="ats-skills-col">
+              <div class="ats-col-title match">✓ Coincidentes incorporadas (<span id="matched-count">0</span>)</div>
+              <div class="ats-tags" id="matched-skills-tags"></div>
+            </div>
+            <div class="ats-skills-col">
+              <div class="ats-col-title gap">✗ Faltantes en tu CV maestro (<span id="missing-count">0</span>)</div>
+              <div class="ats-tags" id="missing-skills-tags"></div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <div id="error-box" class="no-print" hidden></div>
+
+  <div id="cv-container"></div>
+
+  <!-- Modal para Quick-Add de Skill al CV Maestro -->
+  <div id="quick-add-modal" class="modal-overlay no-print" hidden>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Añadir Skill a CV Maestro</h3>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p>Vas a incorporar <strong id="modal-skill-name"></strong> a tu CV Maestro (<span id="modal-skill-lang"></span>):</p>
+        <label for="modal-category-select">Categoría técnica de destino:</label>
+        <select id="modal-category-select"></select>
+      </div>
+      <div class="modal-footer">
+        <button id="modal-cancel-btn" class="btn-secondary">Cancelar</button>
+        <button id="modal-confirm-btn" class="btn-success">Añadir al CV Maestro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para Cover Letter (Carta de Presentación) -->
+  <div id="cover-letter-modal" class="modal-overlay no-print" hidden>
+    <div class="modal-card modal-large">
+      <div class="modal-header">
+        <h3>Carta de Presentación (Cover Letter)</h3>
+        <button id="cl-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="cl-loading" class="cl-loading" hidden>
+          <div class="cl-spinner"></div>
+          <span>Redactando carta de presentación con IA…</span>
+        </div>
+        <div id="cl-content-box">
+          <p class="cl-hint">Texto generado para la oferta. Puedes editarlo directamente antes de copiarlo:</p>
+          <div id="cl-text" class="cl-text" contenteditable="true" spellcheck="false"></div>
+        </div>
+      </div>
+      <div class="modal-footer modal-footer-split">
+        <div class="modal-footer-left">
+          <button id="cl-regenerate-btn" class="btn-secondary">Regenerar 🔄</button>
+        </div>
+        <div class="modal-footer-right">
+          <button id="cl-copy-btn" class="btn-success">Copiar texto 📋</button>
+          <button id="cl-cancel-btn" class="btn-secondary">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../lib/storage.js"></script>
+  <script src="../lib/langDetect.js"></script>
+  <script src="../lib/aiProviders.js"></script>
+  <script src="../lib/pdfExporter.js"></script>
+  <script src="../templates/renderCv.js"></script>
+  <script src="review.js"></script>
+</body>
+</html>

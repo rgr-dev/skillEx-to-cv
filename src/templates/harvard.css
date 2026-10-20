@@ -1,0 +1,155 @@
+/* Harvard-style resume template, matching the layout of the original master CVs:
+ * centered header, justified summary, bold section titles with a rule below,
+ * and company/role lines split left (name/role) vs right (location/period). */
+
+:root {
+  /* "Liberation Serif" first: it's metric-compatible with Times New Roman and,
+   * unlike "Georgia" (which Linux/fontconfig silently substitutes with Noto
+   * Serif), it reliably keeps a correct glyph-to-Unicode mapping when the
+   * browser prints to PDF. Fonts whose ligature glyphs lack a proper
+   * ToUnicode CMap entry can visually render fine but drop letters (typically
+   * "l", "fi", "fl") from the PDF's actual text layer — which is exactly what
+   * an ATS parses. font-variant-ligatures below is a second line of defense
+   * against that same failure mode regardless of which font gets used. */
+  --cv-font: "Liberation Serif", "Georgia", "Times New Roman", serif;
+  --cv-text: #111111;
+  --cv-rule: #111111;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--cv-font);
+  font-variant-ligatures: none;
+  -webkit-font-variant-ligatures: none;
+  font-feature-settings: "liga" 0, "clig" 0, "dlig" 0, "hlig" 0;
+  color: var(--cv-text);
+  background: #e9e9e9;
+  margin: 0;
+  padding: 24px 0;
+}
+
+.cv-page {
+  width: 8.5in;
+  min-height: 11in;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 0.6in 0.75in;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.cv-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.cv-name {
+  font-size: 16pt;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin: 0 0 4px;
+}
+
+.cv-contact {
+  font-size: 10pt;
+}
+
+.cv-summary {
+  font-size: 10pt;
+  text-align: justify;
+  margin: 10px 0 16px;
+}
+
+.cv-section {
+  margin-bottom: 14px;
+}
+
+.cv-section-title {
+  font-size: 11pt;
+  font-weight: bold;
+  text-transform: none;
+  border-bottom: 1px solid var(--cv-rule);
+  padding-bottom: 2px;
+  margin-bottom: 6px;
+}
+
+.cv-skills-line {
+  font-size: 10pt;
+  margin: 3px 0;
+}
+
+.cv-skills-label {
+  font-weight: bold;
+}
+
+.cv-entry {
+  margin-bottom: 10px;
+}
+
+.cv-entry-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10pt;
+}
+
+.cv-entry-row .left {
+  font-weight: bold;
+}
+
+.cv-entry-row .right {
+  font-style: italic;
+}
+
+.cv-bullets {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 10pt;
+}
+
+.cv-bullets li {
+  margin-bottom: 2px;
+  text-align: justify;
+}
+
+.cv-technologies {
+  font-size: 9.5pt;
+  margin-top: 4px;
+}
+
+.cv-technologies .label {
+  font-weight: bold;
+}
+
+.cv-education-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 10pt;
+}
+
+.cv-education-list li {
+  margin-bottom: 4px;
+}
+
+@page {
+  margin: 0;
+}
+
+@media print {
+  body {
+    background: #ffffff;
+    padding: 0;
+  }
+  .cv-page {
+    box-shadow: none;
+    margin: 0;
+    width: auto;
+    min-height: auto;
+    padding: 0.5in 0.6in;
+  }
+  .no-print {
+    display: none !important;
+  }
+}

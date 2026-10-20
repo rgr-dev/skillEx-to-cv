@@ -402,5 +402,8 @@
   },
   "btnCopiedSuccess": {
     "message": "Copiado! ✓"
+  },
+  "apiKeyWarning": {
+    "message": "⚠️ Esta chave de API é armazenada no seu perfil do Firefox sem criptografia adicional. Não compartilhe seu perfil do Firefox com outras pessoas."
   }
 }

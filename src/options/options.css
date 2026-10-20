@@ -298,6 +298,16 @@ button.secondary {
   color: #666;
 }
 
+.hint-warning {
+  margin-top: 6px;
+  padding: 7px 10px;
+  background: #fff8e1;
+  border-left: 3px solid #f59e0b;
+  border-radius: 4px;
+  color: #92400e;
+  font-size: 12px;
+}
+
 .saved-msg {
   margin-left: 10px;
   color: #2a9d8f;
